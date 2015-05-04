@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 public class Presentation extends ActionBarActivity implements LocationListener{
@@ -40,8 +41,8 @@ public class Presentation extends ActionBarActivity implements LocationListener{
         return super.onOptionsItemSelected(item);
     }
 
-    public void retry(){
-
+    public void retry(View view){
+        textView.setText("RETRY");
 
     }
 

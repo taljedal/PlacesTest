@@ -67,119 +67,11 @@ public class MainActivity extends ActionBarActivity{
         Intent intent = new Intent(this, Presentation.class);
         startActivity(intent);
 
-       // PlaceFinder pf = new PlaceFinder();
-       // pf.getPlaces();
 
-        //getPlaces();
 
     }
 
 
 
-
-    public void getPlaces(){
-        String s = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=57.6932533,11.9758226" +
-                "&radius=5000&types=bar&sensor=true&key=AIzaSyDtYpMpKbapO5YkwHO5h265jccWsiYUx58";
-
-        DownloadWebpageTask dwt = new DownloadWebpageTask();
-        dwt.execute(s);
-    }
-
-    // Uses AsyncTask to create a task away from the main UI thread. This task takes a
-    // URL string and uses it to create an HttpUrlConnection. Once the connection
-    // has been established, the AsyncTask downloads the contents of the webpage as
-    // an InputStream. Finally, the InputStream is converted into a string, which is
-    // displayed in the UI by the AsyncTask's onPostExecute method.
-    private class DownloadWebpageTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            // params comes from the execute() call: params[0] is the url.
-            try {
-                return downloadUrl(urls[0]);
-            } catch (IOException e) {
-                return "Unable to retrieve web page. URL may be invalid.";
-            }
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            JSONObject jObject;
-            Place place;
-            PlaceJSONParser placeJsonParser = new PlaceJSONParser();
-
-            try{
-                jObject = new JSONObject(result);
-
-                /** Getting the parsed data as a List construct */
-                place = placeJsonParser.parse(jObject);
-
-                /*
-                String isOpen;
-                if(place.isOpen) {
-                    isOpen = "OPEN!";
-                }
-                else {
-                    isOpen = "CLOSED!";
-                }
-                */
-
-                textView.setText(place.name +"\n"+place.address+"\n"+place.rating+"\n");
-
-            }catch(Exception e){
-                textView.setText("FAIL!");
-
-                Log.d("Exception", e.toString());
-            }
-        }
-    }
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-// the web page content as a InputStream, which it returns as
-// a string.
-    private String downloadUrl(String myurl) throws IOException {
-        InputStream is = null;
-
-
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            // Starts the query
-            conn.connect();
-            int response = conn.getResponseCode();
-            Log.d("HTTP_Example", "The response is: " + response);
-            is = conn.getInputStream();
-
-            // Convert the InputStream into a string
-            String contentAsString = readIt(is);
-            return contentAsString;
-
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-    // Reads an InputStream and converts it to a String.
-    public String readIt(InputStream stream) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        StringBuilder jsonResults = new StringBuilder();
-        int readSize;
-        reader = new InputStreamReader(stream, "UTF-8");
-
-        char[] buff = new char[1024];
-        while ((readSize = reader.read(buff)) != -1) {
-            jsonResults.append(buff, 0, readSize);
-        }
-
-
-        return jsonResults.toString();
-    }
 
 }
