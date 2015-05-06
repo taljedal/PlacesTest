@@ -12,7 +12,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FIND PLACE!"
+        android:text="Not Satisfied?"
         android:onClick="retry"
         android:id="@+id/button"
         android:layout_below="@+id/textView"
