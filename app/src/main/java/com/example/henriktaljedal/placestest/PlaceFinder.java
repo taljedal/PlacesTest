@@ -21,16 +21,18 @@ import java.util.Random;
  * Created by henriktaljedal on 2015-05-04.
  */
 public class PlaceFinder {
-    ArrayList<Place> foundPlaces;
+    ArrayList<WPlace> foundPlaces;
 
 
-    public void getPlaces(){
+    public DownloadWebpage getPlaces(){
         String s = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=57.6932533,11.9758226" +
                 "&radius=5000&types=bar&sensor=true&key=AIzaSyDtYpMpKbapO5YkwHO5h265jccWsiYUx58";
 
         DownloadWebpage dwt = new DownloadWebpage();
         dwt.execute(s);
+        return dwt;
     }
+
 
 
     // Uses AsyncTask to create a task away from the main UI thread. This task takes a
@@ -38,8 +40,8 @@ public class PlaceFinder {
     // has been established, the AsyncTask downloads the contents of the webpage as
     // an InputStream. Finally, the InputStream is converted into a string, which is
     // displayed in the UI by the AsyncTask's onPostExecute method.
-    private class DownloadWebpage extends AsyncTask<String, Void, String> {
-
+    public class DownloadWebpage extends AsyncTask<String, Void, String> {
+        public AsyncResponse delegate=null;
         @Override
         protected String doInBackground(String... urls) {
 
@@ -54,17 +56,17 @@ public class PlaceFinder {
         @Override
         protected void onPostExecute(String result) {
             JSONObject jObject;
-            Place place;
+            WPlace place;
 
             try{
                 jObject = new JSONObject(result);
 
                 /** Getting the parsed data as a List construct */
                 place = parse(jObject);
-                Presentation.textView.setText(place.name +"\n"+place.address+"\n"+place.rating+"\n");
+
+                delegate.processFinish(place);
 
             }catch(Exception e){
-                Presentation.textView.setText("ERROR");
                 Log.d("Exception", e.toString());
             }
         }
@@ -116,11 +118,11 @@ public class PlaceFinder {
 
         return jsonResults.toString();
     }
-    /** Receives a JSONObject and returns an instance of a Place object */
-    public Place parse(JSONObject jObject){
+    /** Receives a JSONObject and returns an instance of a WPlace object */
+    public WPlace parse(JSONObject jObject){
 
-        ArrayList<Place> placesList = new ArrayList<Place>();
-        Place place, chosenPlace;
+        ArrayList<WPlace> placesList = new ArrayList<WPlace>();
+        WPlace place, chosenPlace;
 
         JSONArray jPlaces = null;
         try {
@@ -149,37 +151,37 @@ public class PlaceFinder {
         return chosenPlace;
     }
 
-    /** Parsing the Place JSON object */
-    private Place getPlace(JSONObject jPlace){
+    /** Parsing the WPlace JSON object */
+    private WPlace getPlace(JSONObject jPlace){
 
-        Place place = new Place();
+        WPlace place = new WPlace();
 
         try {
-            // Extracting Place Reference, if available
+            // Extracting WPlace Reference, if available
             if(!jPlace.isNull("reference")){
                 place.reference = jPlace.getString("reference");
             }
-            // Extracting Place name, if available
+            // Extracting WPlace name, if available
             if(!jPlace.isNull("name")){
                 place.name = jPlace.getString("name");
             }
 
-            // Extracting Place Vicinity, if available
+            // Extracting WPlace Vicinity, if available
             if(!jPlace.isNull("vicinity")){
                 place.address = jPlace.getString("vicinity");
             }
 
-            // Extracting Place Rating, if available
+            // Extracting WPlace Rating, if available
             if(!jPlace.isNull("rating")){
                 place.rating = jPlace.getString("rating");
             }
 
-            // Extracting Place Phone, if available
+            // Extracting WPlace Phone, if available
             if(!jPlace.isNull("phone")){
                 place.phone = jPlace.getString("phone");
             }
 
-            // Extracting Place isOpen, if available
+            // Extracting WPlace isOpen, if available
             if(!jPlace.isNull("open_now")){
                 place.isOpen = jPlace.getBoolean("open_now");
             }

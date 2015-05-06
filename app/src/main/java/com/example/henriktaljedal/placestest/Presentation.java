@@ -10,7 +10,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-public class Presentation extends ActionBarActivity implements LocationListener{
+public class Presentation extends ActionBarActivity implements LocationListener, AsyncResponse {
+
+
     double latitude = 0;
     double longitude = 0;
     public static TextView textView;
@@ -21,11 +23,18 @@ public class Presentation extends ActionBarActivity implements LocationListener{
         setContentView(R.layout.activity_presentation);
         textView = (TextView) findViewById(R.id.textView);
 
-        getLocation();
         PlaceFinder pf = new PlaceFinder();
-        pf.getPlaces();
+        getLocation();
+        PlaceFinder.DownloadWebpage dw = pf.getPlaces();
+        dw.delegate=this;
+
+
     }
 
+
+    public void processFinish(WPlace place){
+        textView.setText(place.name +"\n"+place.address+"\n"+place.rating+"\n"); //this you will received result fired from async class of onPostExecute(result) method.
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
